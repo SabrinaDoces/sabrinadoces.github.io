@@ -2,103 +2,147 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sabrina Doces</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sabrina Doces - Delivery</title>
   <style>
     body {
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #fff0f5;
-      color: #5a2a45;
-      padding: 20px;
+      background-color: #fff0f5;
+    }
+    header {
+      background-color: #d81b60;
+      color: white;
+      padding: 15px;
       text-align: center;
+      font-size: 24px;
+      font-weight: bold;
     }
-    h1 {
-      color: #d81b60;
-      font-size: 2.5em;
-      margin-bottom: 5px;
-    }
-    h2 {
-      color: #c2185b;
-      font-size: 1.5em;
+    .produtos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px;
     }
     .card {
-      background: #ffffff;
-      border-radius: 15px;
-      padding: 25px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      display: inline-block;
-      max-width: 400px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      text-align: center;
+    }
+    .card img {
       width: 100%;
-      margin-top: 20px;
+      height: 160px;
+      object-fit: cover;
     }
-    p {
-      color: #7b3b66;
-      font-size: 1em;
-      margin-bottom: 20px;
+    .card h3 {
+      margin: 10px 0 5px;
     }
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 12px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #e91e63;
+    .card p {
+      margin: 0 0 10px;
+      color: #555;
     }
-    input:focus, select:focus {
-      outline: none;
-      border-color: #ad1457;
-    }
-    button {
+    .card button {
       background-color: #e91e63;
       color: white;
       border: none;
+      padding: 10px;
+      width: 100%;
       cursor: pointer;
       font-weight: bold;
-      transition: background 0.3s;
     }
-    button:hover {
-      background-color: #d81b60;
+    .card button:hover {
+      background-color: #c2185b;
+    }
+    .carrinho {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 2px solid #ccc;
+      padding: 15px;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .carrinho p {
+      margin: 5px 0;
+    }
+    .finalizar {
+      margin-top: 10px;
+      background-color: #43b143;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .finalizar:hover {
+      background-color: #388e3c;
     }
   </style>
 </head>
 <body>
-  <h1>Sabrina Doces 🍓</h1>
-  <div class="card">
-    <h2>Morango do Amor – R$10,00 cada</h2>
-    <p>Morango com brigadeiro de ninho, e uma casquinha crocante de açucar<br>
-    </p>
+  <header>Sabrina Doces 🍓</header>
+  <div class="produtos" id="listaProdutos"></div>
 
-    <form id="orderForm">
-      <input type="text" id="nome" placeholder="Seu nome" required />
-      <input type="tel" id="telefone" placeholder="Telefone" required />
-      <select id="pagamento" required>
-        <option value="">Forma de pagamento</option>
-        <option value="PIX">PIX</option>
-        <option value="Dinheiro">Dinheiro</option>
-        <option value="Cartão">Cartão</option>
-      </select>
-      <input type="number" id="quantidade" placeholder="Quantidade" min="1" required />
-      <button type="submit">Fazer Pedido via WhatsApp</button>
-    </form>
+  <div class="carrinho" id="carrinho">
+    <p><strong>Total: R$ <span id="total">0.00</span></strong></p>
+    <button class="finalizar" onclick="finalizarPedido()">Finalizar Pedido via WhatsApp</button>
   </div>
 
   <script>
-    document.getElementById('orderForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+    const produtos = [
+      { nome: 'Morangos do amor', preco: 12, imagem: 'https://via.placeholder.com/300x200?text=Morangos+do+Amor' },
+      { nome: 'Morangos do amor de maracujá', preco: 12, imagem: 'https://via.placeholder.com/300x200?text=Maracujá' },
+      { nome: 'Coxinha de morango', preco: 12, imagem: 'https://via.placeholder.com/300x200?text=Coxinha' },
+      { nome: 'Morango de Ferrero Rocher', preco: 12, imagem: 'https://via.placeholder.com/300x200?text=Ferrero+Rocher' },
+      { nome: 'Bomba de brigadeiro', preco: 12, imagem: 'https://via.placeholder.com/300x200?text=Brigadeiro' },
+      { nome: 'Morango crocante calda quente', preco: 12, imagem: 'https://via.placeholder.com/300x200?text=Crocante' }
+    ];
 
-      const nome = document.getElementById('nome').value;
-      const telefone = document.getElementById('telefone').value;
-      const pagamento = document.getElementById('pagamento').value;
-      const quantidade = document.getElementById('quantidade').value;
+    const carrinho = {};
 
-      const msg = `Olá!%0ANome: ${nome}%0ATelefone: ${telefone}%0APagamento: ${pagamento}%0APedido: ${quantidade} Morango(s) do Amor`;
+    function atualizarCarrinho() {
+      let total = 0;
+      for (const nome in carrinho) {
+        total += carrinho[nome] * 12;
+      }
+      document.getElementById('total').textContent = total.toFixed(2);
+    }
 
-      // Substitua abaixo com seu número real
-      const numero = '5516993455460';
+    function adicionarAoCarrinho(nome) {
+      if (!carrinho[nome]) carrinho[nome] = 0;
+      carrinho[nome]++;
+      atualizarCarrinho();
+    }
 
-      window.open(`https://wa.me/${numero}?text=${msg}`, '_blank');
+    function finalizarPedido() {
+      let texto = 'Olá! Quero fazer um pedido:%0A';
+      for (const nome in carrinho) {
+        texto += `${carrinho[nome]}x ${nome}%0A`;
+      }
+      texto += `Total: R$ ${document.getElementById('total').textContent}`;
+      const numero = '5591999999999'; // Substitua pelo seu número
+      window.open(`https://wa.me/${numero}?text=${texto}`, '_blank');
+    }
+
+    const lista = document.getElementById('listaProdutos');
+    produtos.forEach(produto => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${produto.imagem}" alt="${produto.nome}" />
+        <h3>${produto.nome}</h3>
+        <p>R$ ${produto.preco.toFixed(2)}</p>
+        <button onclick="adicionarAoCarrinho('${produto.nome}')">Adicionar</button>
+      `;
+      lista.appendChild(card);
     });
   </script>
 </body>
 </html>
-
