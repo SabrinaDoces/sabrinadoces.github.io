@@ -55,76 +55,50 @@
     .card button:hover {
       background-color: #c2185b;
     }
-    .formulario {
+    .botao-finalizar {
+      display: block;
+      margin: 30px auto;
+      background-color: #43b143;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .botao-finalizar:hover {
+      background-color: #388e3c;
+    }
+    .pagina {
+      display: none;
       padding: 20px;
     }
-    .formulario label {
+    .ativa {
       display: block;
-      margin-top: 10px;
     }
-    .formulario input, .formulario select {
+    input, select {
       width: 100%;
       padding: 8px;
       margin-top: 5px;
+      margin-bottom: 15px;
       border-radius: 5px;
       border: 1px solid #ccc;
-    }
-    .carrinho {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: white;
-      border-top: 2px solid #ccc;
-      padding: 15px;
-      box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    .carrinho p {
-      margin: 5px 0;
-    }
-    .carrinho-lista {
-      width: 100%;
-      padding: 0;
-      list-style: none;
-      margin: 0 0 10px;
-    }
-    .carrinho-lista li {
-      display: flex;
-      justify-content: space-between;
-      padding: 5px 10px;
-    }
-    .finalizar {
-      background-color: #43b143;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .finalizar:hover {
-      background-color: #388e3c;
-    }
-    .remover {
-      background-color: transparent;
-      color: red;
-      border: none;
-      cursor: pointer;
-      margin-left: 10px;
     }
   </style>
 </head>
 <body>
   <header>Sabrina Doces 🍓</header>
 
-  <div class="produtos" id="listaProdutos"></div>
+  <!-- Pagina de produtos -->
+  <div class="pagina ativa" id="paginaProdutos">
+    <div class="produtos" id="listaProdutos"></div>
+    <button class="botao-finalizar" onclick="irParaFinalizacao()">Finalizar Pedido</button>
+  </div>
 
-  <div class="formulario">
+  <!-- Pagina de finalizacao -->
+  <div class="pagina" id="paginaFinalizacao">
     <h3>Seus Dados</h3>
     <label>Nome:
       <input type="text" id="nomeCliente" required>
@@ -154,12 +128,12 @@
     <div id="infoRetirada" style="display: none; margin-top: 10px; font-size: 14px;">
       Retirada em: Avenida Ettore Quaranta N°780 - Loteamento Residencial Santa Catarina - Pontal-SP
     </div>
-  </div>
 
-  <div class="carrinho" id="carrinho">
-    <ul class="carrinho-lista" id="carrinhoLista"></ul>
-    <p><strong>Total: R$ <span id="total">0.00</span></strong></p>
-    <button class="finalizar" onclick="finalizarPedido()">Finalizar Pedido via WhatsApp</button>
+    <h4>Resumo do Pedido:</h4>
+    <ul id="resumoCarrinho"></ul>
+    <p><strong>Total: R$ <span id="totalFinal">0.00</span></strong></p>
+
+    <button class="botao-finalizar" onclick="finalizarPedido()">Enviar via WhatsApp</button>
   </div>
 
   <script>
@@ -174,38 +148,39 @@
 
     const carrinho = {};
 
-    function atualizarCarrinho() {
-      const lista = document.getElementById('carrinhoLista');
+    function atualizarCarrinhoResumo() {
+      const lista = document.getElementById('resumoCarrinho');
       lista.innerHTML = '';
       let total = 0;
       for (const nome in carrinho) {
         const qtd = carrinho[nome];
         const item = document.createElement('li');
-        item.innerHTML = `${qtd}x ${nome} <button class="remover" onclick="removerItem('${nome}')">✕</button>`;
+        item.textContent = `${qtd}x ${nome}`;
         lista.appendChild(item);
         total += qtd * 12;
       }
-      document.getElementById('total').textContent = total.toFixed(2);
+      const tipo = document.getElementById('tipoPedido').value;
+      const taxa = tipo === 'Entrega' ? 3 : 0;
+      document.getElementById('totalFinal').textContent = (total + taxa).toFixed(2);
     }
 
     function adicionarAoCarrinho(nome) {
       if (!carrinho[nome]) carrinho[nome] = 0;
       carrinho[nome]++;
-      atualizarCarrinho();
     }
 
-    function removerItem(nome) {
-      if (carrinho[nome]) {
-        carrinho[nome]--;
-        if (carrinho[nome] <= 0) delete carrinho[nome];
-        atualizarCarrinho();
-      }
+    function irParaFinalizacao() {
+      document.getElementById('paginaProdutos').classList.remove('ativa');
+      document.getElementById('paginaFinalizacao').classList.add('ativa');
+      atualizarCarrinhoResumo();
+      atualizarTipo();
     }
 
     function atualizarTipo() {
       const tipo = document.getElementById('tipoPedido').value;
       document.getElementById('campoEndereco').style.display = tipo === 'Entrega' ? 'block' : 'none';
       document.getElementById('infoRetirada').style.display = tipo === 'Retirada' ? 'block' : 'none';
+      atualizarCarrinhoResumo();
     }
 
     function finalizarPedido() {
@@ -219,7 +194,6 @@
         alert('Por favor, preencha seu nome.');
         return;
       }
-
       if (tipo === 'Entrega' && !enderecoInput) {
         alert('Por favor, preencha o endereço para entrega.');
         return;
