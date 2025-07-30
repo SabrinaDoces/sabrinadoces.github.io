@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sabrina Doces</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff0f5;
+      color: #5a2a45;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #d81b60;
+      font-size: 2.5em;
+      margin-bottom: 5px;
+    }
+    h2 {
+      color: #c2185b;
+      font-size: 1.5em;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: inline-block;
+      max-width: 400px;
+      width: 100%;
+      margin-top: 20px;
+    }
+    p {
+      color: #7b3b66;
+      font-size: 1em;
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #e91e63;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #ad1457;
+    }
+    button {
+      background-color: #e91e63;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #d81b60;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sabrina Doces 🍓</h1>
+  <div class="card">
+    <h2>Morango do Amor – R$10,00</h2>
+    <p>Morango coberto com brigadeiro de Dinha<br>e casca de açúcar estilo maçã do amor</p>
+
+    <form id="orderForm">
+      <input type="text" id="nome" placeholder="Seu nome" required />
+      <input type="tel" id="telefone" placeholder="Telefone" required />
+      <select id="pagamento" required>
+        <option value="">Forma de pagamento</option>
+        <option value="PIX">PIX</option>
+        <option value="Dinheiro">Dinheiro</option>
+        <option value="Cartão">Cartão</option>
+      </select>
+      <button type="submit">Fazer Pedido via WhatsApp</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nome = document.getElementById('nome').value;
+      const telefone = document.getElementById('telefone').value;
+      const pagamento = document.getElementById('pagamento').value;
+
+      const msg = `Olá! Meu nome é ${nome}%0AQuero fazer um pedido:%0A🍓 Morango do Amor – R$10,00%0ATelefone: ${telefone}%0APagamento: ${pagamento}`;
+      
+      // Substitua abaixo com seu número de WhatsApp com DDI e DDD
+      const numero = '5591999999999'; // Exemplo: 55 (Brasil) + DDD + número (sem espaços ou traços)
+
+      window.open(`https://wa.me/${numero}?text=${msg}`, '_blank');
+    });
+  </script>
+</body>
+</html>
