@@ -55,6 +55,20 @@
     .card button:hover {
       background-color: #c2185b;
     }
+    .formulario {
+      padding: 20px;
+    }
+    .formulario label {
+      display: block;
+      margin-top: 10px;
+    }
+    .formulario input, .formulario select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
     .carrinho {
       position: fixed;
       bottom: 0;
@@ -107,7 +121,40 @@
 </head>
 <body>
   <header>Sabrina Doces 🍓</header>
+
   <div class="produtos" id="listaProdutos"></div>
+
+  <div class="formulario">
+    <h3>Seus Dados</h3>
+    <label>Nome:
+      <input type="text" id="nomeCliente" required>
+    </label>
+
+    <label>Forma de Pagamento:
+      <select id="pagamento">
+        <option value="Pix">Pix</option>
+        <option value="Dinheiro">Dinheiro</option>
+        <option value="Cartão">Cartão</option>
+      </select>
+    </label>
+
+    <label>Tipo de Pedido:
+      <select id="tipoPedido" onchange="atualizarTipo()">
+        <option value="Retirada">Retirada</option>
+        <option value="Entrega">Entrega</option>
+      </select>
+    </label>
+
+    <div id="campoEndereco" style="display: none;">
+      <label>Endereço para Entrega:
+        <input type="text" id="enderecoEntrega" placeholder="Rua, número, bairro...">
+      </label>
+    </div>
+
+    <div id="infoRetirada" style="display: none; margin-top: 10px; font-size: 14px;">
+      Retirada em: Avenida Ettore Quaranta N°780 - Loteamento Residencial Santa Catarina - Pontal-SP
+    </div>
+  </div>
 
   <div class="carrinho" id="carrinho">
     <ul class="carrinho-lista" id="carrinhoLista"></ul>
@@ -155,14 +202,53 @@
       }
     }
 
+    function atualizarTipo() {
+      const tipo = document.getElementById('tipoPedido').value;
+      document.getElementById('campoEndereco').style.display = tipo === 'Entrega' ? 'block' : 'none';
+      document.getElementById('infoRetirada').style.display = tipo === 'Retirada' ? 'block' : 'none';
+    }
+
     function finalizarPedido() {
-      let texto = 'Olá! Quero fazer um pedido:%0A';
-      for (const nome in carrinho) {
-        texto += `${carrinho[nome]}x ${nome}%0A`;
+      const nome = document.getElementById('nomeCliente').value.trim();
+      const pagamento = document.getElementById('pagamento').value;
+      const tipo = document.getElementById('tipoPedido').value;
+      const enderecoInput = document.getElementById('enderecoEntrega').value.trim();
+      const taxaEntrega = tipo === 'Entrega' ? 3.00 : 0.00;
+
+      if (!nome) {
+        alert('Por favor, preencha seu nome.');
+        return;
       }
-      texto += `Total: R$ ${document.getElementById('total').textContent}`;
+
+      if (tipo === 'Entrega' && !enderecoInput) {
+        alert('Por favor, preencha o endereço para entrega.');
+        return;
+      }
+
+      let texto = `Olá! Quero fazer um pedido:%0A`;
+      texto += `👤 Nome: ${nome}%0A`;
+      texto += `🚚 Tipo de pedido: ${tipo}%0A`;
+      texto += tipo === 'Entrega'
+        ? `📍 Endereço: ${enderecoInput}%0A`
+        : `📍 Retirada em: Avenida Ettore Quaranta N°780 - Pontal-SP%0A`;
+      texto += `💳 Pagamento: ${pagamento}%0A%0A`;
+
+      let total = 0;
+      for (const nomeProd in carrinho) {
+        const qtd = carrinho[nomeProd];
+        total += qtd * 12;
+        texto += `🍓 ${qtd}x ${nomeProd}%0A`;
+      }
+
+      if (tipo === 'Entrega') {
+        texto += `🚚 Taxa de entrega: R$ ${taxaEntrega.toFixed(2)}%0A`;
+      }
+
+      const totalFinal = total + taxaEntrega;
+      texto += `%0A💰 Total: R$ ${totalFinal.toFixed(2)}`;
+
       const numero = '5516997912414';
-      window.open(`https://wa.me/${numero}?text=${texto}`, '_blank');
+      window.open(`https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, '_blank');
     }
 
     const lista = document.getElementById('listaProdutos');
