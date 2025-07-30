@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -65,7 +64,7 @@
 <body>
   <h1>Sabrina Doces 🍓</h1>
   <div class="card">
-    <h2>Morango do Amor – R$10,00</h2>
+    <h2>Morango do Amor – R$10,00 cada</h2>
     <p>Morango coberto com brigadeiro de Dinha<br>e casca de açúcar estilo maçã do amor</p>
 
     <form id="orderForm">
@@ -77,6 +76,7 @@
         <option value="Dinheiro">Dinheiro</option>
         <option value="Cartão">Cartão</option>
       </select>
+      <input type="number" id="quantidade" placeholder="Quantidade" min="1" required />
       <button type="submit">Fazer Pedido via WhatsApp</button>
     </form>
   </div>
@@ -88,14 +88,16 @@
       const nome = document.getElementById('nome').value;
       const telefone = document.getElementById('telefone').value;
       const pagamento = document.getElementById('pagamento').value;
+      const quantidade = document.getElementById('quantidade').value;
 
-      const msg = `Olá! Meu nome é ${nome}%0AQuero fazer um pedido:%0A🍓 Morango do Amor – R$10,00%0ATelefone: ${telefone}%0APagamento: ${pagamento}`;
-      
-      // Substitua abaixo com seu número de WhatsApp com DDI e DDD
-      const numero = '5516993455460'; // Exemplo: 55 (Brasil) + DDD + número (sem espaços ou traços)
+      const msg = `Olá!%0ANome: ${nome}%0ATelefone: ${telefone}%0APagamento: ${pagamento}%0APedido: ${quantidade} Morango(s) do Amor`;
+
+      // Substitua abaixo com seu número real
+      const numero = '5516993455460';
 
       window.open(`https://wa.me/${numero}?text=${msg}`, '_blank');
     });
   </script>
 </body>
 </html>
+
