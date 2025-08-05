@@ -91,13 +91,13 @@
 <body>
   <header>Sabrina Doces 🍓</header>
 
-  <!-- Pagina de produtos -->
+  <!-- Página de produtos -->
   <div class="pagina ativa" id="paginaProdutos">
     <div class="produtos" id="listaProdutos"></div>
     <button class="botao-finalizar" onclick="irParaFinalizacao()">Finalizar Pedido</button>
   </div>
 
-  <!-- Pagina de finalizacao -->
+  <!-- Página de finalização -->
   <div class="pagina" id="paginaFinalizacao">
     <h3>Seus Dados</h3>
     <label>Nome:
@@ -143,7 +143,11 @@
       { nome: 'coxinha de ninho&nutella', preco: 12, imagem: 'coxinha.jpg' },
       { nome: 'coxinha deferrero rocher', preco: 12, imagem: 'ferrero.jpg' },
       { nome: 'coxinha de brigadeiro', preco: 12, imagem: 'brigadeiro.jpg' },
-      { nome: 'bombom de morango', preco: 12, imagem: 'crocante.jpg' }
+      { nome: 'bombom de morango', preco: 12, imagem: 'crocante.jpg' },
+      { nome: 'morango casadinho', preco: 12, imagem: 'casadinho.jpg' },
+      { nome: 'coxinha de beijinho', preco: 12, imagem: 'beijinho.jpg' },
+      { nome: 'bala baiana', preco: 3.5, imagem: 'bala.jpg' },
+      { nome: '4x bala baiana', preco: 10, imagem: 'bala.jpg' }
     ];
 
     const carrinho = {};
@@ -154,10 +158,12 @@
       let total = 0;
       for (const nome in carrinho) {
         const qtd = carrinho[nome];
+        const produto = produtos.find(p => p.nome === nome);
+        const preco = produto ? produto.preco : 12;
         const item = document.createElement('li');
         item.textContent = `${qtd}x ${nome}`;
         lista.appendChild(item);
-        total += qtd * 12;
+        total += qtd * preco;
       }
       const tipo = document.getElementById('tipoPedido').value;
       const taxa = tipo === 'Entrega' ? 3 : 0;
@@ -199,27 +205,29 @@
         return;
       }
 
-      let texto = `Olá! Quero fazer um pedido:%0A`;
-      texto += `👤 Nome: ${nome}%0A`;
-      texto += `🚚 Tipo de pedido: ${tipo}%0A`;
+      let texto = `Olá! Quero fazer um pedido:\n`;
+      texto += `👤 Nome: ${nome}\n`;
+      texto += `🚚 Tipo de pedido: ${tipo}\n`;
       texto += tipo === 'Entrega'
-        ? `📍 Endereço: ${enderecoInput}%0A`
-        : `📍 Retirada em: Avenida Ettore Quaranta N°780 - Pontal-SP%0A`;
-      texto += `💳 Pagamento: ${pagamento}%0A%0A`;
+        ? `📍 Endereço: ${enderecoInput}\n`
+        : `📍 Retirada em: Avenida Ettore Quaranta N°780 - Pontal-SP\n`;
+      texto += `💳 Pagamento: ${pagamento}\n\n`;
 
       let total = 0;
       for (const nomeProd in carrinho) {
         const qtd = carrinho[nomeProd];
-        total += qtd * 12;
-        texto += `🍓 ${qtd}x ${nomeProd}%0A`;
+        const produto = produtos.find(p => p.nome === nomeProd);
+        const preco = produto ? produto.preco : 12;
+        total += qtd * preco;
+        texto += `🍓 ${qtd}x ${nomeProd}\n`;
       }
 
       if (tipo === 'Entrega') {
-        texto += `🚚 Taxa de entrega: R$ ${taxaEntrega.toFixed(2)}%0A`;
+        texto += `🚚 Taxa de entrega: R$ ${taxaEntrega.toFixed(2)}\n`;
       }
 
       const totalFinal = total + taxaEntrega;
-      texto += `%0A💰 Total: R$ ${totalFinal.toFixed(2)}`;
+      texto += `\n💰 Total: R$ ${totalFinal.toFixed(2)}`;
 
       const numero = '5516997912414';
       window.open(`https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, '_blank');
@@ -240,3 +248,4 @@
   </script>
 </body>
 </html>
+
